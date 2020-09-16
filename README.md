@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+Project 1 - Karen Lopez
+================
+September 18, 2020
 
-You can use the [editor on GitHub](https://github.com/kmlopez12/ST558-Project1/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+GitHub Documents
+----------------
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This is an R Markdown format used for publishing markdown documents to
+GitHub. When you click the **Knit** button all R code chunks are run and
+a markdown file (.md) suitable for publishing to GitHub is generated.
 
-### Markdown
+Including Code
+--------------
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+You can include R code in the document as follows:
 
-```markdown
-Syntax highlighted code block
+    summary(cars)
 
-# Header 1
-## Header 2
-### Header 3
+    ##      speed           dist       
+    ##  Min.   : 4.0   Min.   :  2.00  
+    ##  1st Qu.:12.0   1st Qu.: 26.00  
+    ##  Median :15.0   Median : 36.00  
+    ##  Mean   :15.4   Mean   : 42.98  
+    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
+    ##  Max.   :25.0   Max.   :120.00
 
-- Bulleted
-- List
+Including Plots
+---------------
 
-1. Numbered
-2. List
+You can also embed plots.
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/kmlopez12/ST558-Project1/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Note that the `echo = FALSE` parameter was added to the code chunk to
+prevent printing of the R code that generated the plot.
