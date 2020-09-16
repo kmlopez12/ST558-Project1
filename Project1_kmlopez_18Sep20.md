@@ -2,34 +2,48 @@ Project 1 - Karen Lopez
 ================
 September 18, 2020
 
-GitHub Documents
-----------------
+-   [Project Objectives](#project-objectives)
+-   [Repo](#repo)
+-   [Blog](#blog)
+-   [Vignette Content Starts Here](#vignette-content-starts-here)
+-   [Reading and Summarizing Data from the NHL’s
+    API](#reading-and-summarizing-data-from-the-nhls-api)
 
-This is an R Markdown format used for publishing markdown documents to
-GitHub. When you click the **Knit** button all R code chunks are run and
-a markdown file (.md) suitable for publishing to GitHub is generated.
+Project Objectives
+------------------
 
-Including Code
---------------
+Vignettes are explanations of some concept, package, etc. with text,
+code, and output interweaved.  
+This project involves creating a vignette (a .md file that github will
+render) about reading in data from an API, combining it, and exploring
+it. You will then create a blog post linking to your vignette.
 
-You can include R code in the document as follows:
+Repo
+----
 
-    summary(cars)
+Rename the created file as README.md (notice this is .md not .Rmd! -
+your outputted document should be a .md file) and use this as the README
+for your repo. This should make the website for the repo correspond to
+the output of your .Rmd file (essentially). Note: You can use the
+`render` function to output to a specific file name rather than changing
+it manually.
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+Blog
+----
 
-Including Plots
----------------
+Once you’ve completed your vignette you should write a brief blog
+post:  
+• explaining what you did in the project and any findings you made  
+• You should also reflect on the process you went through for this
+project. Discuss things like:  
+– what would you do differently in approaching the project?  
+– what was the most difficult part of the logic and programming for
+you?  
+– what are your big take-aways for future projects?  
+• In your blog post, provide a link to your github pages repo
 
-You can also embed plots, for example:
+Vignette Content Starts Here
+----------------------------
 
-![](Project1_kmlopez_18Sep20_files/figure-gfm/pressure-1.png)<!-- -->
-
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+Reading and Summarizing Data from the NHL’s API
+===============================================
