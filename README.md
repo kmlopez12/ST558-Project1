@@ -20,10 +20,13 @@ Required Packages
 -----------------
 
 First, install and read in the necessary packages, as shown below.
-Packages only need to be installed once.
+Packages only need to be installed once, but code is included in
+comment.
 
     #install.packages("tidyverse")
     #library(tidyverse)
+    library(httr)
+    library(jsonlite)
 
 Contact and Get Data
 --------------------
@@ -34,18 +37,39 @@ API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and
 API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and
 return parsed, well-formatted data.
 
-    franchise <- function(){}
+    #function that creates the url for the records API
+    getUrl <- function(input){
+      baseUrl <- "https://records.nhl.com/site/api/franchise"
+      table <- input
+      fullURL <- paste0(baseUrl, table) #create url
+    }
+    print(getUrl(NULL))
 
-    teamTotals <- function(){}
+    ## [1] "https://records.nhl.com/site/api/franchise"
 
-    seasonRecords <- function(){}
+    franchise <- function(){
+      franchiseAPI <- GET(getUrl(NULL))
+      franchiseAPI #check connection
+      
+      franchiseText <- content(franchiseAPI, "text") #convert to JSON text form
+      #franchiseText #check dataset
+      franchiseList <- fromJSON(franchiseText, flatten=TRUE) #convert form to df
+      #franchiseList #check dataset
 
-    goalieRecords <- function(){}
+      #return(parsedData)
+    }
 
-    skaterRecords <- function(){}
+    teamTotals <- function(){
+      teamAPI <- GET(getUrl("-team-totals"))
+      teamAPI #check connection
+      
+      teamText <- content(teamAPI, "text") #convert to JSON text form
+      #teamText #check dataset
+      teamList <- fromJSON(teamText, flatten=TRUE) #convert form to df
+      #teamList #check dataset
 
-
-    teams <- function(){}
+      #return(parsedData)
+    }
 
 Wrapper Function
 ----------------
