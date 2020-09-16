@@ -4,14 +4,12 @@ date: "September 18, 2020"
 output:
   rmarkdown::github_document:
     toc: true
-knit: rmarkdown::render("Project1_kmlopez_18Sep20.md", output_file="README.md")
-
-#knit: (function(input, ...){
-#  rmarkdown::render(
-#    input,
-#    output_file="README.md",
-#    envir=globalenv()
-#  )})
+knit: (function(input, ...){
+  rmarkdown::render(
+    input,
+    output_file="README.md",
+    envir=globalenv()
+  )})
 ---
 
 ```{r setup, include=FALSE}
