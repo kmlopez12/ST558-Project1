@@ -29,7 +29,7 @@ library(jsonlite)
 
 ## Contact and Get Data
 This code contains functions that will contact the [NHL records API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and [NHL stat API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and return parsed, well-formatted data.  
-```{r getData}
+```{r getData, message=FALSE}
 #function that creates the url for the records API
 getUrl <- function(input){
   baseUrl <- "https://records.nhl.com/site/api/franchise"
@@ -45,9 +45,13 @@ franchise <- function(){
   #franchiseText #check dataset
   franchiseList <- fromJSON(franchiseText, flatten=TRUE) #convert form to df
   #franchiseList #check dataset
-
-  #return(parsedData)
+  
+  #in line 3- franchise<- fromJSON(franchise, flatten= TRUE), I added simplifyDataFrame = TRUE, to make the output a little neater. Also added franchise<- as.data.frame(franchise) as the next line.
+  
+  return(franchiseList)
 }
+franchise()
+print(knitr::kable(franchise()))
 
 teamTotals <- function(){
   teamAPI <- GET(getUrl("-team-totals"))
@@ -57,10 +61,18 @@ teamTotals <- function(){
   #teamText #check dataset
   teamList <- fromJSON(teamText, flatten=TRUE) #convert form to df
   #teamList #check dataset
-
-  #return(parsedData)
+  
+  #gameTypeId = 2 means regular season games, gameTypeId = 3 means post-season games. Type =1 if you ever see that is preseason
+  
+  return(teamList)
 }
+teamTotals()
+print(knitr::kable(teamTotals()))
 ```
+  
+It is intended that you can either specify ID or the name. The intention was to map the names the user gives to the IDs and then just use the ID in the URL building. This means you should use a switch() or if else or something to look at the ID input given, determine if it is a number (use ID directly) or convert it from a franchise name to an ID. If you can get it to work another way with the user specifying either input, that is fine too!  
+I wrote a function that incorporated filter() & returns data based on user input of the team name. For ex, using the franchise table, if a user inputs name="Tigers" into my function's arguments..
+
 ```{r notReady, eval=FALSE, include=FALSE}
 seasonRecords <- function(ID){
   seasonAPI <- GET(getUrl("-season-results?cayenneExp=franchiseId=24&sort=seasonId&dir=DESC"))
@@ -102,6 +114,8 @@ skaterRecords <- function(ID){
 
 #from stats API
 teams <- function(){}
+
+#8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams
 ```
 
 ## Wrapper Function
