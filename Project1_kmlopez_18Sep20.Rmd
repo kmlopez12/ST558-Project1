@@ -43,10 +43,13 @@ franchise <- function(){
   
   franchiseText <- content(franchiseAPI, "text") #convert to JSON text form
   #franchiseText #check dataset
-  franchiseList <- fromJSON(franchiseText, flatten=TRUE) #convert form to df
-  #franchiseList #check dataset
+  franchiseList <- fromJSON(franchiseText, flatten=TRUE) #convert form
+  franchiseList #check dataset
   
-  #in line 3- franchise<- fromJSON(franchise, flatten= TRUE), I added simplifyDataFrame = TRUE, to make the output a little neater. Also added franchise<- as.data.frame(franchise) as the next line.
+  #franchiseList2 <- fromJSON(franchiseText, flatten=TRUE, simplifyDataFrame=TRUE)
+  #franchiseList2
+  #franchiseDF2 <- as.data.frame(franchiseList2) #convert form to df, but adds .data to column names
+  #franchiseDF2
   
   return(franchiseList)
 }
@@ -59,15 +62,15 @@ teamTotals <- function(){
   
   teamText <- content(teamAPI, "text") #convert to JSON text form
   #teamText #check dataset
-  teamList <- fromJSON(teamText, flatten=TRUE) #convert form to df
+  teamList <- fromJSON(teamText, flatten=TRUE) #convert form
   #teamList #check dataset
   
   #gameTypeId = 2 means regular season games, gameTypeId = 3 means post-season games. Type =1 if you ever see that is preseason
   
   return(teamList)
 }
-teamTotals()
-print(knitr::kable(teamTotals()))
+#teamTotals()
+#print(knitr::kable(teamTotals()))
 ```
   
 It is intended that you can either specify ID or the name. The intention was to map the names the user gives to the IDs and then just use the ID in the URL building. This means you should use a switch() or if else or something to look at the ID input given, determine if it is a number (use ID directly) or convert it from a franchise name to an ID. If you can get it to work another way with the user specifying either input, that is fine too!  
@@ -80,7 +83,7 @@ seasonRecords <- function(ID){
   
   seasonText <- content(seasonAPI, "text") #convert to JSON text form
   #seasonText #check dataset
-  seasonList <- fromJSON(seasonText, flatten=TRUE) #convert form to df
+  seasonList <- fromJSON(seasonText, flatten=TRUE) #convert form
   #seasonList #check dataset
 
   #return(parsedData)
@@ -92,7 +95,7 @@ goalieRecords <- function(ID){
   
   goalieText <- content(goalieAPI, "text") #convert to JSON text form
   #goalieText #check dataset
-  goalieList <- fromJSON(goalieText, flatten=TRUE) #convert form to df
+  goalieList <- fromJSON(goalieText, flatten=TRUE) #convert form
   #goalieList #check dataset
 
   #return(parsedData)
@@ -104,7 +107,7 @@ skaterRecords <- function(ID){
   
   skaterText <- content(skaterAPI, "text") #convert to JSON text form
   #skaterText #check dataset
-  skaterList <- fromJSON(skaterText, flatten=TRUE) #convert form to df
+  skaterList <- fromJSON(skaterText, flatten=TRUE) #convert form
   #skaterList #check dataset
 
   #return(parsedData)
@@ -120,8 +123,13 @@ teams <- function(){}
 
 ## Wrapper Function
 
-```{r wrapperFcn}
-allAccess <- function(){}
+```{r wrapperFcn, eval=FALSE, include=FALSE}
+allAccess <- function(fcn, teamID=NULL, ...){
+  result <- c(fcn,"()")
+  return(result)
+  #doesn't work
+}
+allAccess(franchise)
 ```
 
 ## Exploratory Analysis
