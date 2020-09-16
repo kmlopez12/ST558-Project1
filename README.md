@@ -43,9 +43,6 @@ return parsed, well-formatted data.
       table <- input
       fullURL <- paste0(baseUrl, table) #create url
     }
-    print(getUrl(NULL))
-
-    ## [1] "https://records.nhl.com/site/api/franchise"
 
     franchise <- function(){
       franchiseAPI <- GET(getUrl(NULL))

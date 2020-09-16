@@ -36,7 +36,6 @@ getUrl <- function(input){
   table <- input
   fullURL <- paste0(baseUrl, table) #create url
 }
-print(getUrl(NULL))
 
 franchise <- function(){
   franchiseAPI <- GET(getUrl(NULL))
