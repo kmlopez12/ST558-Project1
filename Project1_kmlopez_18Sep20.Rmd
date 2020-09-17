@@ -28,9 +28,11 @@ library(jsonlite)
 library(dplyr)
 ```
 
-## Contact and Get Data
+## Make Contact and Get Data
 This code contains functions that will contact the [NHL records API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and [NHL stat API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and return parsed, well-formatted data.  
-```{r getData, message=FALSE}
+..
+### Franchise API
+```{r franchiseAPI, message=FALSE}
 #function that creates the url for the records API
 getUrl <- function(input){
   baseUrl <- "https://records.nhl.com/site/api/franchise"
@@ -168,18 +170,44 @@ skaterRecords <- function(ID){
 #print(knitr::kable(skaterRecord))
 ```
   
-It is intended that you can either specify ID or the name. The intention was to map the names the user gives to the IDs and then just use the ID in the URL building. This means you should use a switch() or if else or something to look at the ID input given, determine if it is a number (use ID directly) or convert it from a franchise name to an ID. If you can get it to work another way with the user specifying either input, that is fine too!  
-I wrote a function that incorporated filter() & returns data based on user input of the team name. For ex, using the franchise table, if a user inputs name="Tigers" into my function's arguments.  
-#gameTypeId = 2 means regular season games, gameTypeId = 3 means post-season games. Type =1 if you ever see that is preseason  
-
-```{r notReady, message=FALSE}
-
-
-
+### Stats API  
+```{r statsAPI, message=FALSE}
 #from stats API
-teams <- function(){}
-#http://statsapi.web.nhl/v1/teams
-#8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams
-#someone can't get Stats API, ?stats=statsSingleSeasonPlayoffs modifier to work
-#someone had trouble with person.names and team.schedule.next (get only teams with next game scheduled)
+teams <- function(input){
+  url = paste0("https://statsapi.web.nhl.com/api/v1/teams", input)
+  print(url)
+  teamsAPI <- GET(url)
+  #teamsAPI #check connection
+
+  teamsText <- content(teamsAPI, "text") #convert to JSON text form
+  #teamsText #check dataset
+  teamsList <- fromJSON(teamsText, flatten=TRUE) #convert form
+  #teamsList #check dataset
+  
+  teamsDF <- as.data.frame(teamsList)
+  #teamsList #check dataset
+  #colnames(teamsDF) <- c() #change df col names
+
+  return(teamsDF)
+}
+#teamsRecord <- teams("?stats=statsSingleSeasonPlayoffs") #test that function works
+#print(knitr::kable(teamsRecord))
+
+#8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
+# ?expand=team.roster
+# ?expand=person.names
+# ?expand=team.schedule.next
+# ?expand=team.schedule.previous
+# ?expand=team.stats
+# ?expand=team.roster&season=20142015
+# ?teamId=4,5,29
+# ?stats=statsSingleSeasonPlayoffs
+```
+-someone can't get Stats API, ?stats=statsSingleSeasonPlayoffs modifier to work  
+-someone had trouble with person.names and team.schedule.next (get only teams with next game scheduled)  
+  
+### Wrapper Function
+You should write a wrapper function that is essentially a one-stop-shop for the user to access any of the API endpoints you did above. That is, this function should simply call the appropriate endpoint as per the users request (including any modifiers, teamIDs, etc.)  
+```{r wrapperFcn}
+
 ```
