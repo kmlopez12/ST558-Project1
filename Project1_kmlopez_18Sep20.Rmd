@@ -30,7 +30,7 @@ library(dplyr)
 
 ## Make Contact and Get Data
 This code contains functions that will contact the [NHL records API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and [NHL stat API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and return parsed, well-formatted data.  
-..
+
 ### Franchise API
 ```{r franchiseAPI, message=FALSE}
 #function that creates the url for the records API

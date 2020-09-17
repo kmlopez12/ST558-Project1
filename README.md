@@ -6,6 +6,7 @@ September 18, 2020
     API](#reading-and-summarizing-data-from-the-nhls-api)
     -   [Required Packages](#required-packages)
     -   [Make Contact and Get Data](#make-contact-and-get-data)
+        -   [Franchise API](#franchise-api)
         -   [Stats API](#stats-api)
         -   [Wrapper Function](#wrapper-function)
 
@@ -36,8 +37,9 @@ This code contains functions that will contact the [NHL records
 API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and
 [NHL stat
 API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and
-return parsed, well-formatted data.  
-.. \#\#\# Franchise API
+return parsed, well-formatted data.
+
+### Franchise API
 
     #function that creates the url for the records API
     getUrl <- function(input){
