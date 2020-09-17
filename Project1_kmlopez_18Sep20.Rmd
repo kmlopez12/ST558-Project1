@@ -51,8 +51,8 @@ franchise <- function(){
   
   return(franchiseDF)
 }
-franchiseData <- franchise() #test that function works
-print(knitr::kable(franchiseData))
+#franchiseData <- franchise() #test that function works
+#print(knitr::kable(franchiseData))
 
 teamTotals <- function(){
   teamAPI <- GET(getUrl("-team-totals"))
@@ -67,8 +67,8 @@ teamTotals <- function(){
   
   return(teamDF)
 }
-teamTotals <- teamTotals() #test that function works
-print(knitr::kable(teamTotals))
+#teamTotals <- teamTotals() #test that function works
+#print(knitr::kable(teamTotals))
 
 #function that return numeric team ID when supplied with team name
 getID <- function(teamName){
@@ -109,8 +109,8 @@ seasonRecords <- function(ID){
 
   return(seasonDF)
 }
-seasonRecord <- seasonRecords("Carolina") #test that function works
-print(knitr::kable(seasonRecord))
+#seasonRecord <- seasonRecords("Carolina") #test that function works
+#print(knitr::kable(seasonRecord))
 
 goalieRecords <- function(ID){
   url <- ""
