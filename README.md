@@ -455,18 +455,36 @@ best you can). A few requirements are below:
     ## |                   38|   80.50000|   49.50000|
 
     #Create at least 5 plots utilizing coloring, grouping, etc. All should have nice labels & titles.
+    #many plots but won't add labels because some categorical data is coded numerically, but information is included where possible
 
-    #bar plot
+    #bar plot of franchise status
     g <- ggplot(teamTots, aes(x=activeFranchise)) #create base plotting object
-    g + geom_bar(aes(fill=as.factor(activeFranchise))) + labs(x="inactive      Franchise Status      active", title="Number of Active and Inactive NHL Franchises") + scale_x_discrete(labels=c("inactive", "active")) + scale_fill_discrete(name="Status", labels=c("Inactive","Active")) #add layers, but won't add labels because data is coded numerically
+    g + geom_bar(aes(fill=as.factor(activeFranchise))) + labs(x="inactive      Franchise Status      active", title="Number of Active and Inactive NHL Franchises") + scale_x_discrete(labels=c("inactive", "active")) + scale_fill_discrete(name="Status", labels=c("Inactive","Active")) #add layers
 
 ![](README_files/figure-gfm/plots-1.png)<!-- -->
 
-    #histogram
+    #histogram plot of name changes per franchise id
+    i <- ggplot(franchiseData, aes(firstSeasonId))
+    i + geom_histogram(aes(fill=as.factor(firstSeasonId))) + labs(x="First Season ID", title="Name Changes of NFL Teams by First Season ID") + scale_fill_discrete(name="First Season ID")
 
+![](README_files/figure-gfm/plots-2.png)<!-- -->
 
-    #box plot
+    #histogram density plot of all franchise wins
+    h <- ggplot(teamTots, aes(x=wins))
+    h + geom_histogram(aes(y=..density.., fill=as.factor(franchiseId))) + labs(x="Number of Wins", title="Density Plot of All Franchise Wins by Franchise ID") + scale_fill_discrete(name="Franchise ID") + geom_density()
 
-    #scatter plot
+![](README_files/figure-gfm/plots-3.png)<!-- -->
 
-    #any plot
+    #scatter plot of Carolina goalie games player versus number of losses
+    k <- ggplot(goaliesC, aes(x=gamesPlayed, y=losses))
+    k + geom_point(color="purple") + labs(x="Number of Games Played", y="Number of Losses", title="Carolina Hurricane Goalie Games Played versus Losses") + geom_smooth(size=0.12)
+
+![](README_files/figure-gfm/plots-4.png)<!-- -->
+
+    #box plot of Carolina, Boston, NY goalies games played
+    goaliesR <- accessAPI(4, "Rangers")
+    goalies2 <- bind_rows(goaliesC, goaliesB, goaliesR)
+    j <- ggplot(goalies2, aes(x=franchiseName, y=gamesPlayed))
+    j + geom_boxplot() + labs(x="Franchise Name", y="Games Played", title="Games Played by Goalies from Carolina Hurricanes, Boston Bruins, and New York Rangers")
+
+![](README_files/figure-gfm/plots-5.png)<!-- -->
