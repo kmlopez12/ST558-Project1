@@ -171,6 +171,15 @@ skaterRecords <- function(ID){
 ```
   
 ### Stats API  
+The user is required to input a team ID or name and modifier to access the desired data. This string input format isn't ideal, but is corrected in the wrapper function.  
+Input guide for modifiers, copied from API website:  
+  -?expand=team.roster Shows roster of active players for the specified team  
+  -?expand=person.names Same as above, but gives less info  
+  -?expand=team.schedule.next Returns details of the upcoming game for a team  
+  -?expand=team.schedule.previous Same as above but for the last game played  
+  -?expand=team.stats Returns the teams stats for the season  
+  -?expand=team.roster&season=20142015 Adding the season identifier shows the roster for that season  
+  -?teamId=4,5,29 Can string team id together to get multiple teams  
 ```{r statsAPI, message=FALSE}
 #from stats API
 teams <- function(ID, input){
@@ -182,7 +191,7 @@ teams <- function(ID, input){
     url <- paste0("https://statsapi.web.nhl.com/api/v1/teams/", ID, "/", input)
   }
   
-  print(url)
+  #print(url)
   teamsAPI <- GET(url)
   teamsAPI #check connection
 
@@ -200,53 +209,85 @@ teams <- function(ID, input){
 #teamsRecord <- teams(12,"?expand=person.names") #test that function works
 #print(knitr::kable(teamsRecord))
 
-teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
-print(knitr::kable(teamsRecord2))
+#teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
+#print(knitr::kable(teamsRecord2))
 
-#API doesn't seem to be set up correctly and simply returns the same team information table across the different motifiers
+#API returns the same team information table across the different modifiers with nested data frame(s) that contain the modifier data. On the discussion board, the instructor noted we can print the output as is and that we shouldn't worry about the last modifier, so I omitted modifier 13 (?stats=statsSingleSeasonPlayoffs).
 
-#8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
-# ?expand=team.roster
-# ?expand=person.names
-# ?expand=team.schedule.next
-# ?expand=team.schedule.previous
-# ?expand=team.stats
-# ?expand=team.roster&season=20142015
-# ?teamId=4,5,29
-# ?stats=statsSingleSeasonPlayoffs
+#first 7 of 8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
 ```
--someone can't get Stats API, ?stats=statsSingleSeasonPlayoffs modifier to work  
--someone had trouble with person.names and team.schedule.next (get only teams with next game scheduled)  
 
-  
 ### Wrapper Function
-You should write a wrapper function that is essentially a one-stop-shop for the user to access any of the API endpoints you did above. That is, this function should simply call the appropriate endpoint as per the users request (including any modifiers, teamIDs, etc.)  
-
-You should have an input on your function that allows the user to choose which endpoint.
+This wrapper function allows the user to access any of the API endpoints and modifiers included in the above code. The user must input the endpoint and team ID or name, where team input is applicable. The endpoints have been coded by numerbers, making user input more friendly.  
   
-The user should be able to specify both the teamID and endpoint in your wrapper function. Essentially it should be a single function that the user can use to call any of the API endpoints that you have written functions for. This function should allow them to specify any of the possible inputs as well.  
+Endpoint input guide, number 1-5 are from the Records API and numbers 6-12 are from the Stats API:
+  -1: franchise information for all teams  
+  -2: team totals for all teams  
+  -3: season records for a team (must specify team ID or name)  
+  -4: goalie records for a team (must specify team ID or name)  
+  -5: skater records for a team (must specify team ID or name)  
+  -6: team roster of active players for a team (must specify team ID or name)  
+  -7: active player names for a team (must specify team ID or name)  
+  -8: upcoming game for a team (must specify team ID or name)  
+  -9: last game played for a team (must specify team ID or name)  
+  -10: season stats for a team (must specify team ID or name)  
+  -11: roster by season for a team (must specify team ID or name)  
+  -12: franchise information for multiple teams (must specify team IDs or names)  
 
 ```{r wrapperFcn}
-accessAPI <- function(team, API, endpoint){
-  #check if team name is numeric & get numeric ID if it's not
-  if(is.character(team)){
+accessAPI <- function(endpoint, team=NULL){
+  outputDF <- NULL #create output object
+  
+  #check if team name is character or valid number, get numeric ID if character
+  if(is.null(team)){
+  } else if(is.character(team)){
     team = getID(team)
-  } else if(!is.number(team)){
+  } else if(!is.numeric(team)){
     print("Please enter valid team name or ID.")
   }
   
-  #check for valid api
-  API <- tolower(API)
-  if(API=="records"){
-    API="records"
-  } else if(API=="stats"){
-    API="stats"
-  } else{
-    print("Please enter valid API: records or stats")
+  #check if endpoint is valid, get url based on endpoint input
+  if(endpoint==1){
+    outputDF <- franchise()
+  } else if(endpoint==2){
+    outputDF <- teamTotals()
+  } else if(endpoint==3){
+    outputDF <- seasonRecords(team)
+  } else if(endpoint==4){
+    outputDF <- goalieRecords(team)
+  } else if(endpoint==5){
+    outputDF <- skaterRecords(team)
+  } else if(endpoint==6){
+    outputDF <- teams(team, "?expand=team.roster")
+  } else if(endpoint==7){
+    outputDF <- teams(team, "?expand=person.names")
+  } else if(endpoint==8){
+    outputDF <- teams(team, "?expand=team.schedule.next")
+  } else if(endpoint==9){
+    outputDF <- teams(team, "?expand=team.schedule.previous")
+  } else if(endpoint==10){
+    outputDF <- teams(team, "?expand=team.stats")
+  } else if(endpoint==11){
+    outputDF <- teams(team, "?expand=team.roster&season=20142015")
+  } else if(endpoint==12){
+    outputDF <- teams(team, "?teamId=4,5,29")
+  } else {
+    print("Please enter a valid number endpoint or modifier between 1 and 13.")
   }
-  
-  
-  
+return(outputDF)
 }
+#test code, all work
+#franchise1 <- accessAPI(1)
+#print(head(franchise1))
+
+#goalie1<- accessAPI(4, "Carolina")
+#print(head(goalie1))
+
+roster1 <- accessAPI(6, team=12)
+print(roster1)
 ```
 
+```{r notUsed, eval=FALSE, include=FALSE}
+
+
+```
