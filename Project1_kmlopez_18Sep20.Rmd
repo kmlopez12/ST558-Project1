@@ -290,7 +290,6 @@ return(outputDF)
 ## Exploratory Analysis
 Once you have the functions to query the data, you should perform a basic exploratory data analysis. Not all things reported need to show something interesting or meaningful (i.e. graphs that show no relationship are fine) but you should discuss each graph (if you don’t know hockey, that is ok - simply discuss the graphs and summaries as best you can). A few requirements are below:  
 ```{r join, message=FALSE}
-#At some point you should do a join on two returned datasets from different API endpoints (say combine them according to franchise ID)
 #join goalie records and skater records for Boston Bruins
 goaliesB <- accessAPI(4, team="Boston")
 skatersB <- accessAPI(5, team="Boston")
@@ -311,8 +310,6 @@ print(kable(rosterA))
 ```
 
 ```{r contingencyTables, message=FALSE}
-#You should create some contingency tables
-
 #view game type counts from team totals
 #1 is pre-season, 2 is regular season, 3 is post-season")
 teamTots <- accessAPI(2)
@@ -325,12 +322,19 @@ table(kable(teamTots$activeFranchise))
 table(kable(goaliesB$gamesPlayed))
 ```
 
-```{r numSummeries, eval=FALSE, include=FALSE}
+```{r numSummeries, message=FALSE}
 #You should create numerical summaries for some quantitative variables at each setting of some of your categorical variables
+#summary of wins for all franchises
+print(summary(teamTots$wins))
 
+#view correlation between losses anf games played by Carolina Hurricanes goalies
+print(cor(goaliesC$losses, goaliesC$gamesPlayed))
+
+#view average wins and losses by franchise id
+teamTots %>% group_by(teamTots$franchiseId) %>% summarise(avgWins=mean(wins), avgLosses=mean(losses))
 ```
 
-```{r plots, eval=FALSE, include=FALSE}
+```{r plots, eval=FALSE, include=FALSE, message=FALSE}
 #You should create at least five plots utilizing coloring, grouping, etc. All plots should have nice labels and titles.
 #You should have at least one bar plot, one histogram, one box plot, and one scatter plot
 
