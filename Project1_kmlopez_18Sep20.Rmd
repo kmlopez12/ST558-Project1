@@ -310,13 +310,19 @@ rosterA <- rosterA %>% mutate(mascot="Thrash")
 print(kable(rosterA))
 ```
 
-```{r contingencyTables, eval=FALSE, include=FALSE}
+```{r contingencyTables, message=FALSE}
 #You should create some contingency tables
 
-#table1
+#view game type counts from team totals
+#1 is pre-season, 2 is regular season, 3 is post-season")
+teamTots <- accessAPI(2)
+table(kable(teamTots$gameTypeId))
 
-#table2
+#view active(1) vs inactive(0) franchises from team totals
+table(kable(teamTots$activeFranchise))
 
+#view how many goalies played in the same number of games for Boston Bruins
+table(kable(goaliesB$gamesPlayed))
 ```
 
 ```{r numSummeries, eval=FALSE, include=FALSE}
