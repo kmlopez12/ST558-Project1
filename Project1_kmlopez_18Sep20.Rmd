@@ -53,7 +53,7 @@ franchise <- function(){
   
   return(franchiseDF)
 }
-#franchiseData <- franchise() #test that function works
+franchiseData <- franchise() #test that function works
 #print(knitr::kable(franchiseData))
 
 teamTotals <- function(){
@@ -173,14 +173,21 @@ skaterRecords <- function(ID){
 ### Stats API  
 ```{r statsAPI, message=FALSE}
 #from stats API
-teams <- function(input){
-  url = paste0("https://statsapi.web.nhl.com/api/v1/teams", input)
+teams <- function(ID, input){
+  url <- ""
+  if(is.numeric(ID)){
+    url <- paste0("https://statsapi.web.nhl.com/api/v1/teams/", ID, "/", input)
+  } else if(is.character(ID)){
+    ID = getID(ID)
+    url <- paste0("https://statsapi.web.nhl.com/api/v1/teams/", ID, "/", input)
+  }
+  
   print(url)
   teamsAPI <- GET(url)
-  #teamsAPI #check connection
+  teamsAPI #check connection
 
   teamsText <- content(teamsAPI, "text") #convert to JSON text form
-  #teamsText #check dataset
+  teamsText #check dataset
   teamsList <- fromJSON(teamsText, flatten=TRUE) #convert form
   #teamsList #check dataset
   
@@ -190,8 +197,13 @@ teams <- function(input){
 
   return(teamsDF)
 }
-#teamsRecord <- teams("?stats=statsSingleSeasonPlayoffs") #test that function works
+#teamsRecord <- teams(12,"?expand=person.names") #test that function works
 #print(knitr::kable(teamsRecord))
+
+teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
+print(knitr::kable(teamsRecord2))
+
+#API doesn't seem to be set up correctly and simply returns the same team information table across the different motifiers
 
 #8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
 # ?expand=team.roster
@@ -205,9 +217,36 @@ teams <- function(input){
 ```
 -someone can't get Stats API, ?stats=statsSingleSeasonPlayoffs modifier to work  
 -someone had trouble with person.names and team.schedule.next (get only teams with next game scheduled)  
+
   
 ### Wrapper Function
 You should write a wrapper function that is essentially a one-stop-shop for the user to access any of the API endpoints you did above. That is, this function should simply call the appropriate endpoint as per the users request (including any modifiers, teamIDs, etc.)  
-```{r wrapperFcn}
 
+You should have an input on your function that allows the user to choose which endpoint.
+  
+The user should be able to specify both the teamID and endpoint in your wrapper function. Essentially it should be a single function that the user can use to call any of the API endpoints that you have written functions for. This function should allow them to specify any of the possible inputs as well.  
+
+```{r wrapperFcn}
+accessAPI <- function(team, API, endpoint){
+  #check if team name is numeric & get numeric ID if it's not
+  if(is.character(team)){
+    team = getID(team)
+  } else if(!is.number(team)){
+    print("Please enter valid team name or ID.")
+  }
+  
+  #check for valid api
+  API <- tolower(API)
+  if(API=="records"){
+    API="records"
+  } else if(API=="stats"){
+    API="stats"
+  } else{
+    print("Please enter valid API: records or stats")
+  }
+  
+  
+  
+}
 ```
+
