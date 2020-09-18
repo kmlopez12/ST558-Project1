@@ -397,7 +397,6 @@ best you can). A few requirements are below:
     ## | 277| | 283| | 378| | 416| | 444| | 468| | 536| |---:| 
     ##      1      1      1      1      2      1      1      1
 
-    #You should create numerical summaries for some quantitative variables at each setting of some of your categorical variables
     #summary of wins for all franchises
     print(summary(teamTots$wins))
 
@@ -410,19 +409,64 @@ best you can). A few requirements are below:
     ## [1] 0.9873253
 
     #view average wins and losses by franchise id
-    teamTots %>% group_by(teamTots$franchiseId) %>% summarise(avgWins=mean(wins), avgLosses=mean(losses))
+    print(kable(teamTots %>% group_by(teamTots$franchiseId) %>% summarise(avgWins=mean(wins), avgLosses=mean(losses))))
 
-    ## # A tibble: 38 x 3
-    ##    `teamTots$franchiseId` avgWins avgLosses
-    ##                     <int>   <dbl>     <dbl>
-    ##  1                      1  1942.     1299  
-    ##  2                      2     1         5  
-    ##  3                      3    95.7      89.7
-    ##  4                      4    25.5      49  
-    ##  5                      5   538.      517. 
-    ##  6                      6  1767      1360. 
-    ##  7                      7   146.      140. 
-    ##  8                      8    87       138. 
-    ##  9                      9    24        53.3
-    ## 10                     10  1550      1480. 
-    ## # … with 28 more rows
+    ## 
+    ## 
+    ## | teamTots$franchiseId|    avgWins|  avgLosses|
+    ## |--------------------:|----------:|----------:|
+    ## |                    1| 1941.50000| 1299.00000|
+    ## |                    2|    1.00000|    5.00000|
+    ## |                    3|   95.66667|   89.66667|
+    ## |                    4|   25.50000|   49.00000|
+    ## |                    5|  538.16667|  517.16667|
+    ## |                    6| 1767.00000| 1359.50000|
+    ## |                    7|  145.50000|  140.50000|
+    ## |                    8|   87.00000|  137.66667|
+    ## |                    9|   24.00000|   53.33333|
+    ## |                   10| 1550.00000| 1479.50000|
+    ## |                   11| 1528.00000| 1505.50000|
+    ## |                   12|  549.16667|  473.83333|
+    ## |                   13|   58.00000|  124.00000|
+    ## |                   14|  922.00000|  972.50000|
+    ## |                   15|  500.50000|  466.50000|
+    ## |                   16| 1142.50000|  823.50000|
+    ## |                   17| 1036.50000|  948.00000|
+    ## |                   18| 1042.00000|  921.00000|
+    ## |                   19|  957.00000|  831.00000|
+    ## |                   20|  868.50000|  926.00000|
+    ## |                   21|  461.00000|  400.50000|
+    ## |                   22|  908.50000|  851.50000|
+    ## |                   23|  330.40000|  338.80000|
+    ## |                   24|  900.50000|  802.00000|
+    ## |                   25|  797.00000|  713.00000|
+    ## |                   26|  349.00000|  375.25000|
+    ## |                   27|  404.50000|  362.25000|
+    ## |                   28|  226.00000|  254.16667|
+    ## |                   29|  584.00000|  507.00000|
+    ## |                   30|  510.00000|  495.50000|
+    ## |                   31|  518.00000|  499.50000|
+    ## |                   32|  531.00000|  438.50000|
+    ## |                   33|  435.50000|  442.50000|
+    ## |                   34|  436.50000|  348.00000|
+    ## |                   35|  176.50000|  182.25000|
+    ## |                   36|  337.50000|  349.00000|
+    ## |                   37|  375.50000|  316.50000|
+    ## |                   38|   80.50000|   49.50000|
+
+    #Create at least 5 plots utilizing coloring, grouping, etc. All should have nice labels & titles.
+
+    #bar plot
+    g <- ggplot(teamTots, aes(x=activeFranchise)) #create base plotting object
+    g + geom_bar(aes(fill=as.factor(activeFranchise))) + labs(x="inactive      Franchise Status      active", title="Number of Active and Inactive NHL Franchises") + scale_x_discrete(labels=c("inactive", "active")) + scale_fill_discrete(name="Status", labels=c("Inactive","Active")) #add layers, but won't add labels because data is coded numerically
+
+![](README_files/figure-gfm/plots-1.png)<!-- -->
+
+    #histogram
+
+
+    #box plot
+
+    #scatter plot
+
+    #any plot
