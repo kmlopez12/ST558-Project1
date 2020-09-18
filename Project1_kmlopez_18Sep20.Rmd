@@ -294,14 +294,16 @@ Once you have the functions to query the data, you should perform a basic explor
 goaliesB <- accessAPI(4, team="Boston")
 skatersB <- accessAPI(5, team="Boston")
 playersB <- bind_rows(goaliesB, skatersB)
-print(kable(playersB))
+combo <- bind_rows(head(playersB),tail(playersB)) #join first 6 and low 4 rows because viewing entire data set is too much for the knit document to create
+print(kable(combo))
+
 ```
 
 ```{r newVariables, message=FALSE}
 #add ratio of most goals against versus saves for the Carolina Hurricanse
 goaliesC <- accessAPI(4, "Carolina")
 goaliesC <- goaliesC %>% mutate(ratio=mostGoalsAgainstOneGame/mostSavesOneGame)
-print(kable(goaliesC))
+print(kable(head(goaliesC)))
 
 #add column to Atlanta Thrashers for the mascot name
 rosterA <- accessAPI(6, team=11)
