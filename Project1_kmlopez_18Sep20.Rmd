@@ -33,6 +33,7 @@ library(knitr)
 This code contains functions that will contact the [NHL records API](https://gitlab.com/dword4/nhlapi/-/blob/master/records-api.md) and [NHL stat API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md), and return parsed, well-formatted data.  
 
 ### Franchise API
+The user is required to input team ID when using the last 3 functions listed here.
 ```{r franchiseAPI, message=FALSE}
 #function that creates the url for the records API
 getUrl <- function(input){
@@ -154,7 +155,7 @@ Input guide for modifiers, copied from API website:
   - ?expand=team.roster&season=20142015 Adding the season identifier shows the roster for that season  
   - ?teamId=4,5,29 Can string team id together to get multiple teams  
 ```{r statsAPI, message=FALSE}
-#from stats API
+#get data from stats API
 teams <- function(ID, input){
   url <- ""
   #creates url basted on input ID
@@ -241,15 +242,15 @@ accessAPI <- function(endpoint, team=NULL){
   }
 return(outputDF)
 }
-#test code, all work
-franchise1 <- accessAPI(1)
-print(kable(head(franchise1)))
+#test code, all work but omitted to reduce knit document size
+#franchise1 <- accessAPI(1)
+#print(kable(head(franchise1)))
 
-goalie1<- accessAPI(4, "Carolina")
-print(kable(head(goalie1)))
+#goalie1<- accessAPI(4, "Carolina")
+#print(kable(head(goalie1)))
 
-roster1 <- accessAPI(6, team=12)
-print(kable(roster1))
+#roster1 <- accessAPI(6, team=12)
+#print(kable(roster1))
 ```
 ## Exploratory Analysis
 A basic exploratory data analysis to show what can be done with data returned from the created functions.  
