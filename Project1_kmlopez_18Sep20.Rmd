@@ -22,10 +22,11 @@ This vignette was compiled to provide detailed instructions on reading and summa
 First, install and read in the necessary packages, as shown below. Packages only need to be installed once, but code is included in comment.  
 ```{r packages, message=FALSE}
 #install.packages("tidyverse")
-#library(tidyverse)
+library(tidyverse)
 library(httr)
 library(jsonlite)
 library(dplyr)
+library(knitr)
 ```
 
 ## Make Contact and Get Data
@@ -53,8 +54,8 @@ franchise <- function(){
   
   return(franchiseDF)
 }
-franchiseData <- franchise() #test that function works
-#print(knitr::kable(franchiseData))
+franchiseData <- franchise() #save data frame object (used in other functions later)
+#print(kable(franchiseData))
 
 teamTotals <- function(){
   teamAPI <- GET(getUrl("-team-totals"))
@@ -69,8 +70,8 @@ teamTotals <- function(){
   
   return(teamDF)
 }
-#teamTotals <- teamTotals() #test that function works
-#print(knitr::kable(teamTotals))
+#teamsT <- teamTotals() #test that function works
+#print(kable(teamsT))
 
 #function that return numeric team ID when supplied with team name
 getID <- function(teamName){
@@ -112,7 +113,7 @@ seasonRecords <- function(ID){
   return(seasonDF)
 }
 #seasonRecord <- seasonRecords("Carolina") #test that function works
-#print(knitr::kable(seasonRecord))
+#print(kable(seasonRecord))
 
 goalieRecords <- function(ID){
   url <- ""
@@ -139,7 +140,7 @@ goalieRecords <- function(ID){
   return(goalieDF)
 }
 #goalieRecord <- goalieRecords("Carolina") #test that function works
-#print(knitr::kable(goalieRecord))
+#print(kable(goalieRecord))
 
 skaterRecords <- function(ID){
   url <- ""
@@ -167,7 +168,7 @@ skaterRecords <- function(ID){
   return(skaterDF)
 }
 #skaterRecord <- skaterRecords(9) #test that function works
-#print(knitr::kable(skaterRecord))
+#print(kable(skaterRecord))
 ```
   
 ### Stats API  
@@ -207,17 +208,17 @@ teams <- function(ID, input){
   return(teamsDF)
 }
 #teamsRecord <- teams(12,"?expand=person.names") #test that function works
-#print(knitr::kable(teamsRecord))
+#print(kable(teamsRecord))
 
 #teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
-#print(knitr::kable(teamsRecord2))
+#print(kable(teamsRecord2))
 
 #API returns the same team information table across the different modifiers with nested data frame(s) that contain the modifier data. On the discussion board, the instructor noted we can print the output as is and that we shouldn't worry about the last modifier, so I omitted modifier 13 (?stats=statsSingleSeasonPlayoffs).
 
 #first 7 of 8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
 ```
 
-### Wrapper Function
+## Wrapper Function
 This wrapper function allows the user to access any of the API endpoints and modifiers included in the above code. The user must input the endpoint and team ID or name, where team input is applicable. The endpoints have been coded by numerbers, making user input more friendly.  
   
 Endpoint input guide, number 1-5 are from the Records API and numbers 6-12 are from the Stats API:
@@ -283,11 +284,48 @@ return(outputDF)
 #goalie1<- accessAPI(4, "Carolina")
 #print(head(goalie1))
 
-roster1 <- accessAPI(6, team=12)
-print(roster1)
+#roster1 <- accessAPI(6, team=12)
+#print(roster1)
+```
+## Exploratory Analysis
+Once you have the functions to query the data, you should perform a basic exploratory data analysis. Not all things reported need to show something interesting or meaningful (i.e. graphs that show no relationship are fine) but you should discuss each graph (if you don’t know hockey, that is ok - simply discuss the graphs and summaries as best you can). A few requirements are below:  
+```{r join, message=FALSE}
+#At some point you should do a join on two returned datasets from different API endpoints (say combine them according to franchise ID)
+#join goalie records and skater records for Boston Bruins
+goaliesB <- accessAPI(4, team="Boston")
+skatersB <- accessAPI(5, team="Boston")
+playersB <- bind_rows(goaliesB, skatersB)
+print(kable(playersB))
 ```
 
-```{r notUsed, eval=FALSE, include=FALSE}
+```{r newVariables, message=FALSE}
+#add ratio of most goals against versus saves for the Carolina Hurricanse
+goaliesC <- accessAPI(4, "Carolina")
+goaliesC <- goaliesC %>% mutate(ratio=mostGoalsAgainstOneGame/mostSavesOneGame)
+print(kable(goaliesC))
 
+#add column to Atlanta Thrashers for the mascot name
+rosterA <- accessAPI(6, team=11)
+rosterA <- rosterA %>% mutate(mascot="Thrash")
+print(kable(rosterA))
+```
+
+```{r contingencyTables, eval=FALSE, include=FALSE}
+#You should create some contingency tables
+
+#table1
+
+#table2
+
+```
+
+```{r numSummeries, eval=FALSE, include=FALSE}
+#You should create numerical summaries for some quantitative variables at each setting of some of your categorical variables
+
+```
+
+```{r plots, eval=FALSE, include=FALSE}
+#You should create at least five plots utilizing coloring, grouping, etc. All plots should have nice labels and titles.
+#You should have at least one bar plot, one histogram, one box plot, and one scatter plot
 
 ```
