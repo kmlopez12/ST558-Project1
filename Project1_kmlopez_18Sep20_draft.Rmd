@@ -37,43 +37,52 @@ This code contains functions that will contact the [NHL records API](https://git
 #function that creates the url for the records API
 getUrl <- function(input){
   baseUrl <- "https://records.nhl.com/site/api/franchise"
-  fullURL <- paste0(baseUrl, input) #create url
+  table <- input
+  fullURL <- paste0(baseUrl, table) #create url
 }
 
 franchise <- function(){
-  franchiseAPI <- GET(getUrl(NULL)) #get url & data
+  franchiseAPI <- GET(getUrl(NULL)) #get url to grab data
   franchiseAPI #check connection
+  
   franchiseText <- content(franchiseAPI, "text") #convert to JSON text form
+  #franchiseText #check dataset
   franchiseList <- fromJSON(franchiseText, flatten=TRUE) #convert form
   franchiseDF <- as.data.frame(franchiseList) #convert to df, adds .data to col names
+  #franchiseDF #check dataset
   colnames(franchiseDF) <- c("id", "firstSeasonId", "lastSeasonId", "mostRecentTeamId", "teamCommonName", "teamPlaceName", "total") #rename columns
   
   return(franchiseDF)
 }
 franchiseData <- franchise() #save data frame object (used in other functions later)
-print(kable(head(franchiseData))) #view first 6 rows
+#print(kable(franchiseData))
 
 teamTotals <- function(){
-  teamAPI <- GET(getUrl("-team-totals")) #get url & data
+  teamAPI <- GET(getUrl("-team-totals"))
+  teamAPI #check connection
+  
   teamText <- content(teamAPI, "text") #convert to JSON text form
+  #teamText #check dataset
   teamList <- fromJSON(teamText, flatten=TRUE) #convert form
-  teamDF <- as.data.frame(teamList) #convert to df, adds .data to col names
-  colnames(teamDF) <- c("id", "activeFranchise", "firstSeasonId", "franchiseId", "gameTypeId", "gamesPlayed", "goalsAgainst", "goalsFor", "homeLosses", "homeOvertimeLosses", "homeTies", "homeWins", "lastSeasonId", "losses","overtimeLosses", "penaltyMinutes", "pointPctg", "points", "roadLosses", "roadOvertimeLosses", "roadTies", "roadWins", "shootoutLosses", "shootoutWins",  "shutouts", "teamId", "teamName", "ties", "triCode", "wins", "total") #rename columns
+  teamDF <- as.data.frame(teamList)
+  #teamList #check dataset
+  colnames(teamDF) <- c("id", "activeFranchise", "firstSeasonId", "franchiseId", "gameTypeId", "gamesPlayed", "goalsAgainst", "goalsFor", "homeLosses", "homeOvertimeLosses", "homeTies", "homeWins", "lastSeasonId", "losses","overtimeLosses", "penaltyMinutes", "pointPctg", "points", "roadLosses", "roadOvertimeLosses", "roadTies", "roadWins", "shootoutLosses", "shootoutWins",  "shutouts", "teamId", "teamName", "ties", "triCode", "wins", "total")
   
   return(teamDF)
 }
-teamsT <- teamTotals() #test that function works
-print(kable(head(teamsT)))  #view first 6 rows
+#teamsT <- teamTotals() #test that function works
+#print(kable(teamsT))
 
-#function that returns numeric team ID when supplied with team name
+#function that return numeric team ID when supplied with team name
 getID <- function(teamName){
   teamData <- data.frame()
   teamID <- NULL
-  #searches for team name in both columns and returns numeric id, as asks for valid input
   if(teamName %in% franchiseData$teamCommonName){
+    #print(paste0(teamName, " is common name")) #test code
     teamData <- franchiseData %>% filter(franchiseData$teamCommonName==teamName)
     teamID <- teamData$id
   } else if(teamName %in% franchiseData$teamPlaceName){
+    #print(paste0(teamName, " is place name")) #test code
     teamData <- franchiseData %>% filter(franchiseData$teamPlaceName==teamName)
     teamID <- teamData$id
   } else {print("Please enter valid team name.")}
@@ -82,124 +91,151 @@ getID <- function(teamName){
 
 seasonRecords <- function(ID){
   url <- ""
-  #creates url basted on input ID
   if(is.numeric(ID)){
     url <- paste0("-season-records?cayenneExp=franchiseId=", ID)
   } else if(is.character(ID)){
     ID = getID(ID)
     url <- paste0("-season-records?cayenneExp=franchiseId=", ID)
   }
-  seasonAPI <- GET(getUrl(url)) #get url & data
+  #url = "-season-records" #view the 38 teams that have stats
+  #print(url) #test code
+  seasonAPI <- GET(getUrl(url))
+  seasonAPI #check connection
+  
   seasonText <- content(seasonAPI, "text") #convert to JSON text form
+  seasonText #check dataset
   seasonList <- fromJSON(seasonText, flatten=TRUE) #convert form
-  seasonDF <- as.data.frame(seasonList) #convert to df, adds .data to col names
+  #seasonList #check dataset
+  seasonDF <- as.data.frame(seasonList)
+  #seasonList #check dataset
   colnames(seasonDF) <- c("id", "fewestGoals", "fewestGoalsAgainst", "fewestGoalsAgainstSeasons", "fewestGoalsSeasons", "fewestLosses", "fewestLossesSeasons", "fewestPoints", "fewestPointsSeasons", "fewestTies", "fewestTiesSeasons", "fewestWins", "fewestWinsSeasons", "franchiseId", "franchiseName", "homeLossStreak", "homeLossStreakDates", "homePointStreak", "homePointStreakDates", "homeWinStreak", "homeWinStreakDates", "homeWinlessStreak", "homeWinlessStreakDates", "lossStreak", "lossStreakDates", "mostGameGoals", "mostGameGoalsDates", "mostGoals", "mostGoalsAgainst", "mostGoalsAgainstSeasons", "mostGoalsSeasons", "mostLosses", "mostLossesSeasons", "mostPenaltyMinutes", "mostPenaltyMinutesSeasons", "mostPoints", "mostPointsSeasons", "mostShutouts", "mostShutoutsSeasons", "mostTies", "mostTiesSeasons", "mostWins", "mostWinsSeasons", "pointStreak", "pointStreakDates", "roadLossStreak", "roadLossStreakDates", "roadPointStreak", "roadPointStreakDates", "roadWinStreak", "roadWinStreakDates", "roadWinlessStreak", "roadWinlessStreakDates", "winStreak", "winStreakDates", "winlessStreak", "winlessStreakDates") #change df col names
 
   return(seasonDF)
 }
-seasonRecord <- seasonRecords("Carolina") #test that function works
-print(kable(head(seasonRecord)))
+#seasonRecord <- seasonRecords("Carolina") #test that function works
+#print(kable(seasonRecord))
 
 goalieRecords <- function(ID){
   url <- ""
-  #creates url basted on input ID
   if(is.numeric(ID)){
     url <- paste0("-goalie-records?cayenneExp=franchiseId=", ID)
   } else if(is.character(ID)){
     ID = getID(ID)
     url <- paste0("-goalie-records?cayenneExp=franchiseId=", ID)
   }
-  goalieAPI <- GET(getUrl(url)) #get url & data
+  #url = "-goalie-records" #view the goalies that have stats
+  #print(url) #test code
+  goalieAPI <- GET(getUrl(url))
+  goalieAPI #check connection
+  
   goalieText <- content(goalieAPI, "text") #convert to JSON text form
+  goalieText #check dataset
   goalieList <- fromJSON(goalieText, flatten=TRUE) #convert form
-  goalieDF <- as.data.frame(goalieList) #convert to df, adds .data to col names
+  goalieList #check dataset
+
+  goalieDF <- as.data.frame(goalieList)
+  #goalieList #check dataset
   colnames(goalieDF) <- c("id", "activePlayer", "firstName", "franchiseId", "franchiseName", "gameTypeId", "gamesPlayed", "lastName", "losses", "mostGoalsAgainstDates", "mostGoalsAgainstOneGame", "mostSavesDates", "mostSavesOneGame", "mostShotsAgainstDates", "mostShotsAgainstOneGame", "mostShutoutsOneSeason", "mostShutoutsSeasonIds", "mostWinsOneSeason", "mostWinsSeasonIds", "overtimeLosses", "playerId", "positionCode", "rookieGamesPlayed", "rookieShutouts", "rookieWins", "seasons", "shutouts", "ties", "dwins", "total") #change df col names
 
   return(goalieDF)
 }
-goalieRecord <- goalieRecords("Carolina") #test that function works
-print(kable(head(goalieRecord)))
+#goalieRecord <- goalieRecords("Carolina") #test that function works
+#print(kable(goalieRecord))
 
 skaterRecords <- function(ID){
   url <- ""
-  #creates url basted on input ID
   if(is.numeric(ID)){
     url <- paste0("-skater-records?cayenneExp=franchiseId=", ID)
   } else if(is.character(ID)){
     ID = getID(ID)
     url <- paste0("-skater-records?cayenneExp=franchiseId=", ID)
   }
-  skaterAPI <- GET(getUrl(url)) #get url & data
-  skaterText <- content(skaterAPI, "text") #convert to JSON text form
-  skaterList <- fromJSON(skaterText, flatten=TRUE) #convert form
-  skaterDF <- as.data.frame(skaterList) #convert to df, adds .data to col names
+  
+  #url = "-skater-records" #view the skaters that have stats
+  #print(url) #test code
+  skaterAPI <- GET(getUrl(url))
+  #skaterAPI #check connection
 
+  skaterText <- content(skaterAPI, "text") #convert to JSON text form
+  #skaterText #check dataset
+  skaterList <- fromJSON(skaterText, flatten=TRUE) #convert form
+  #skaterList #check dataset
+  
+  skaterDF <- as.data.frame(skaterList)
+  #skaterList #check dataset
   colnames(skaterDF) <- c("id", "activePlayer", "assists", "firstName", "franchiseId", "franchiseName", "gameTypeId", "gamesPlayed", "goals", "lastName", "mostAssistsGameDates", "mostAssistsOneGame", "mostAssistsOneSeason", "mostAssistsSeasonIds", "mostGoalsGameDates", "mostGoalsOneGame", "mostGoalsOneSeason", "mostGoalsSeasonIds", "mostPenaltyMinutesOneSeason", "mostPenaltyMinutesSeasonIds", "mostPointsGameDates", "mostPointsOneGame", "mostPointsOneSeason", "mostPointsSeasonIds", "penaltyMinutes", "playerId", "points", "positionCode", "rookiePoints", "seasons", "total") #change df col names
 
   return(skaterDF)
 }
-skaterRecord <- skaterRecords(9) #test that function works
-print(kable(head(skaterRecord)))
+#skaterRecord <- skaterRecords(9) #test that function works
+#print(kable(skaterRecord))
 ```
   
 ### Stats API  
 The user is required to input a team ID or name and modifier to access the desired data. This string input format isn't ideal, but is corrected in the wrapper function.  
 Input guide for modifiers, copied from API website:  
-  
-  - ?expand=team.roster Shows roster of active players for the specified team  
-  - ?expand=person.names Same as above, but gives less info  
-  - ?expand=team.schedule.next Returns details of the upcoming game for a team  
-  - ?expand=team.schedule.previous Same as above but for the last game played  
-  - ?expand=team.stats Returns the teams stats for the season  
-  - ?expand=team.roster&season=20142015 Adding the season identifier shows the roster for that season  
-  - ?teamId=4,5,29 Can string team id together to get multiple teams  
+  -?expand=team.roster Shows roster of active players for the specified team  
+  -?expand=person.names Same as above, but gives less info  
+  -?expand=team.schedule.next Returns details of the upcoming game for a team  
+  -?expand=team.schedule.previous Same as above but for the last game played  
+  -?expand=team.stats Returns the teams stats for the season  
+  -?expand=team.roster&season=20142015 Adding the season identifier shows the roster for that season  
+  -?teamId=4,5,29 Can string team id together to get multiple teams  
 ```{r statsAPI, message=FALSE}
 #from stats API
 teams <- function(ID, input){
   url <- ""
-  #creates url basted on input ID
   if(is.numeric(ID)){
     url <- paste0("https://statsapi.web.nhl.com/api/v1/teams/", ID, "/", input)
   } else if(is.character(ID)){
     ID = getID(ID)
     url <- paste0("https://statsapi.web.nhl.com/api/v1/teams/", ID, "/", input)
   }
+  
+  #print(url)
   teamsAPI <- GET(url)
+  teamsAPI #check connection
+
   teamsText <- content(teamsAPI, "text") #convert to JSON text form
+  teamsText #check dataset
   teamsList <- fromJSON(teamsText, flatten=TRUE) #convert form
-  teamsDF <- as.data.frame(teamsList) #convert to df
+  #teamsList #check dataset
+  
+  teamsDF <- as.data.frame(teamsList)
+  #teamsList #check dataset
+  #colnames(teamsDF) <- c() #change df col names
 
   return(teamsDF)
 }
-teamsRecord <- teams(12,"?expand=person.names") #test that function works
-print(kable(teamsRecord))
+#teamsRecord <- teams(12,"?expand=person.names") #test that function works
+#print(kable(teamsRecord))
 
-teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
-print(kable(teamsRecord2))
+#teamsRecord2 <- teams(54,"?expand=team.schedule.next") #test that function works
+#print(kable(teamsRecord2))
 
 #API returns the same team information table across the different modifiers with nested data frame(s) that contain the modifier data. On the discussion board, the instructor noted we can print the output as is and that we shouldn't worry about the last modifier, so I omitted modifier 13 (?stats=statsSingleSeasonPlayoffs).
+
+#first 7 of 8 modifiers list:https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#teams  
 ```
 
 ## Wrapper Function
 This wrapper function allows the user to access any of the API endpoints and modifiers included in the above code. The user must input the endpoint and team ID or name, where team input is applicable. The endpoints have been coded by numerbers, making user input more friendly.  
   
-Endpoint input guide, number 1-5 are from the Records API and numbers 6-12 are from the Stats API:  
-  - 1: franchise information for all teams  
-  - 2: team totals for all teams  
-  - 3: season records for a team (must specify team ID or name)  
-  - 4: goalie records for a team (must specify team ID or name)  
-  - 5: skater records for a team (must specify team ID or name)  
-  - 6: team roster of active players for a team (must specify team ID or name)  
-  - 7: active player names for a team (must specify team ID or name)  
-  - 8: upcoming game for a team (must specify team ID or name)  
-  - 9: last game played for a team (must specify team ID or name)  
-  - 10: season stats for a team (must specify team ID or name)  
-  - 11: roster by season for a team (must specify team ID or name)  
-  - 12: franchise information for multiple teams (must specify team IDs or names)  
-  
-  
-```{r wrapperFcn, message=FALSE}
-#function to access endpoints of stats API
+Endpoint input guide, number 1-5 are from the Records API and numbers 6-12 are from the Stats API:
+  -1: franchise information for all teams  
+  -2: team totals for all teams  
+  -3: season records for a team (must specify team ID or name)  
+  -4: goalie records for a team (must specify team ID or name)  
+  -5: skater records for a team (must specify team ID or name)  
+  -6: team roster of active players for a team (must specify team ID or name)  
+  -7: active player names for a team (must specify team ID or name)  
+  -8: upcoming game for a team (must specify team ID or name)  
+  -9: last game played for a team (must specify team ID or name)  
+  -10: season stats for a team (must specify team ID or name)  
+  -11: roster by season for a team (must specify team ID or name)  
+  -12: franchise information for multiple teams (must specify team IDs or names)  
+
+```{r wrapperFcn}
 accessAPI <- function(endpoint, team=NULL){
   outputDF <- NULL #create output object
   
@@ -242,49 +278,43 @@ accessAPI <- function(endpoint, team=NULL){
 return(outputDF)
 }
 #test code, all work
-franchise1 <- accessAPI(1)
-print(kable(head(franchise1)))
+#franchise1 <- accessAPI(1)
+#print(head(franchise1))
 
-goalie1<- accessAPI(4, "Carolina")
-print(kable(head(goalie1)))
+#goalie1<- accessAPI(4, "Carolina")
+#print(head(goalie1))
 
-roster1 <- accessAPI(6, team=12)
-print(kable(roster1))
+#roster1 <- accessAPI(6, team=12)
+#print(roster1)
 ```
 ## Exploratory Analysis
-A basic exploratory data analysis to show what can be done with data returned from the created functions.  
-
-### A Join
-Combining data sets is common in data analysis. Here I simply added row from two different endpoints together to view what columns they have in common.  
+Once you have the functions to query the data, you should perform a basic exploratory data analysis. Not all things reported need to show something interesting or meaningful (i.e. graphs that show no relationship are fine) but you should discuss each graph (if you don’t know hockey, that is ok - simply discuss the graphs and summaries as best you can). A few requirements are below:  
 ```{r join, message=FALSE}
 #join goalie records and skater records for Boston Bruins
-goaliesB <- accessAPI(4, team="Boston") #get data
-skatersB <- accessAPI(5, team="Boston") #get data
+goaliesB <- accessAPI(4, team="Boston")
+skatersB <- accessAPI(5, team="Boston")
 playersB <- bind_rows(goaliesB, skatersB)
 combo <- bind_rows(head(playersB),tail(playersB)) #join first 6 and low 4 rows because viewing entire data set is too much for the knit document to create
 print(kable(combo))
+
 ```
 
-### New Variables
-New variables are added to the data sets below to demonstrate how the data sets can be manipulated to give useful results. These examples provide the ratio of a goalie's goals against and team losses, and what a team's mascot's name is or was.  
 ```{r newVariables, message=FALSE}
 #add ratio of most goals against versus saves for the Carolina Hurricanse
-goaliesC <- accessAPI(4, "Carolina") #get data
-goaliesC <- goaliesC %>% mutate(ratio=mostGoalsAgainstOneGame/mostSavesOneGame) #add & compute ratio
+goaliesC <- accessAPI(4, "Carolina")
+goaliesC <- goaliesC %>% mutate(ratio=mostGoalsAgainstOneGame/mostSavesOneGame)
 print(kable(head(goaliesC)))
 
 #add column to Atlanta Thrashers for the mascot name
-rosterA <- accessAPI(6, team=11) #get data
-rosterA <- rosterA %>% mutate(mascot="Thrash") #add mascot
+rosterA <- accessAPI(6, team=11)
+rosterA <- rosterA %>% mutate(mascot="Thrash")
 print(kable(rosterA))
 ```
 
-### Contingency Tables
-These tables provide count summaries of selected variables in the data sets. The code shows the counts of total games for all franchises by game type, a breakdown of franchises that are active or inactive, and how many games were played by goalies of the Boston Bruins.  
 ```{r contingencyTables, message=FALSE}
 #view game type counts from team totals
 #1 is pre-season, 2 is regular season, 3 is post-season")
-teamTots <- accessAPI(2) #get data
+teamTots <- accessAPI(2)
 table(kable(teamTots$gameTypeId))
 
 #view active(1) vs inactive(0) franchises from team totals
@@ -294,22 +324,19 @@ table(kable(teamTots$activeFranchise))
 table(kable(goaliesB$gamesPlayed))
 ```
 
-### Numeric Summaries
-These numeric summaries are calculated from the data sets. The first code returns a 5-number summary of the total teams records, the second code provides a correlation between losses and games playbe by Carolines Hurricanes goalies, and the third code provides average wins and losses by franchise ID.  
 ```{r numSummeries, message=FALSE}
 #summary of wins for all franchises
 print(summary(teamTots$wins))
 
-#view correlation between losses and games played by Carolina Hurricanes goalies
+#view correlation between losses anf games played by Carolina Hurricanes goalies
 print(cor(goaliesC$losses, goaliesC$gamesPlayed))
 
 #view average wins and losses by franchise id
 print(kable(teamTots %>% group_by(teamTots$franchiseId) %>% summarise(avgWins=mean(wins), avgLosses=mean(losses))))
 ```
 
-### Plots
-These plots demonstrate visuals created from data pulled using the above functions. The bar plot shows that categorical data can be plotted to view number of active and inactive franchises in the NFL. The histogram plot shows how many times each team has changed their name since their establishment. The histogram plot is a density plot of wins for all franchise teams. The scatter plot shows how many games were played by goalies of the Carolina Hurricanes against the number of losses each goalie experienced. The box plot is a bit more interesting and depicts the number of games played by goalies of the Carolina Hurricanes, Boston Bruins, and New York Rangers.  
 ```{r plots, message=FALSE}
+#Create at least 5 plots utilizing coloring, grouping, etc. All should have nice labels & titles.
 #many plots but won't add labels because some categorical data is coded numerically, but information is included where possible
 
 #bar plot of franchise status
@@ -317,20 +344,20 @@ g <- ggplot(teamTots, aes(x=activeFranchise)) #create base plotting object
 g + geom_bar(aes(fill=as.factor(activeFranchise))) + labs(x="inactive      Franchise Status      active", title="Number of Active and Inactive NHL Franchises") + scale_x_discrete(labels=c("inactive", "active")) + scale_fill_discrete(name="Status", labels=c("Inactive","Active")) #add layers
 
 #histogram plot of name changes per franchise id
-i <- ggplot(franchiseData, aes(firstSeasonId)) #create base plotting object
-i + geom_histogram(aes(fill=as.factor(firstSeasonId))) + labs(x="First Season ID", title="Name Changes of NFL Teams by First Season ID") + scale_fill_discrete(name="First Season ID") #add layers
+i <- ggplot(franchiseData, aes(firstSeasonId))
+i + geom_histogram(aes(fill=as.factor(firstSeasonId))) + labs(x="First Season ID", title="Name Changes of NFL Teams by First Season ID") + scale_fill_discrete(name="First Season ID")
 
 #histogram density plot of all franchise wins
-h <- ggplot(teamTots, aes(x=wins)) #create base plotting object
-h + geom_histogram(aes(y=..density.., fill=as.factor(franchiseId))) + labs(x="Number of Wins", title="Density Plot of All Franchise Wins by Franchise ID") + scale_fill_discrete(name="Franchise ID") + geom_density() #add layers
+h <- ggplot(teamTots, aes(x=wins))
+h + geom_histogram(aes(y=..density.., fill=as.factor(franchiseId))) + labs(x="Number of Wins", title="Density Plot of All Franchise Wins by Franchise ID") + scale_fill_discrete(name="Franchise ID") + geom_density()
 
 #scatter plot of Carolina goalie games player versus number of losses
-k <- ggplot(goaliesC, aes(x=gamesPlayed, y=losses)) #create base plotting object
-k + geom_point(color="purple") + labs(x="Number of Games Played", y="Number of Losses", title="Carolina Hurricane Goalie Games Played versus Losses") + geom_smooth(size=0.12) #add layers
+k <- ggplot(goaliesC, aes(x=gamesPlayed, y=losses))
+k + geom_point(color="purple") + labs(x="Number of Games Played", y="Number of Losses", title="Carolina Hurricane Goalie Games Played versus Losses") + geom_smooth(size=0.12)
 
 #box plot of Carolina, Boston, NY goalies games played
-goaliesR <- accessAPI(4, "Rangers") #get data
+goaliesR <- accessAPI(4, "Rangers")
 goalies2 <- bind_rows(goaliesC, goaliesB, goaliesR)
-j <- ggplot(goalies2, aes(x=franchiseName, y=gamesPlayed)) #create base plotting object
-j + geom_boxplot() + labs(x="Franchise Name", y="Games Played", title="Games Played by Goalies from Carolina Hurricanes, Boston Bruins, and New York Rangers") #add layers
+j <- ggplot(goalies2, aes(x=franchiseName, y=gamesPlayed))
+j + geom_boxplot() + labs(x="Franchise Name", y="Games Played", title="Games Played by Goalies from Carolina Hurricanes, Boston Bruins, and New York Rangers")
 ```
